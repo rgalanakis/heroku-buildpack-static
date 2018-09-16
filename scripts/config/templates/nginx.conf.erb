@@ -53,14 +53,9 @@ http {
   <% end %>
 
     location / {
+      mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
+      mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
       try_files $uri @prerender;
-      #mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
-      #mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
-    <% if clean_urls %>
-      #try_files $uri.html $uri $uri/ $fallback;
-    <% else %>
-      #try_files $uri $uri/ $fallback;
-    <% end %>
     }
 
     location @prerender {
@@ -84,13 +79,17 @@ http {
       resolver 8.8.8.8;
 
       if ($prerender = 1) {
-
           #setting prerender as a variable forces DNS resolution since nginx caches IPs and doesnt play well with load balancing
           set $prerender "service.prerender.io";
           rewrite .* /$scheme://$host$request_uri? break;
           proxy_pass http://$prerender;
       }
       if ($prerender = 0) {
+      <% if clean_urls %>
+        try_files $uri.html $uri $uri/ $fallback;
+      <% else %>
+        try_files $uri $uri/ $fallback;
+      <% end %>
           rewrite .* /index.html break;
       }
     }
