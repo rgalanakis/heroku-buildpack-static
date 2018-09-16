@@ -84,14 +84,11 @@ http {
           rewrite .* /$scheme://$host$request_uri? break;
           proxy_pass http://$prerender;
       }
-      if ($prerender = 0) {
-      <% if clean_urls %>
-        try_files $uri.html $uri $uri/ $fallback;
-      <% else %>
-        try_files $uri $uri/ $fallback;
-      <% end %>
-          rewrite .* /index.html break;
-      }
+    <% if clean_urls %>
+      try_files $uri.html $uri $uri/ $fallback;
+    <% else %>
+      try_files $uri $uri/ $fallback;
+    <% end %>
     }
 
   <% if clean_urls %>
