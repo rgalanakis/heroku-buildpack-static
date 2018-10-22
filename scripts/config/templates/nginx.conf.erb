@@ -69,6 +69,10 @@ http {
       try_files $uri @prerender;
     }
 
+    location /coming-soon {
+      return 302 https://$host/shop;
+    }
+
     location @prerender {
       proxy_set_header X-Prerender-Token <%= ENV['PRERENDER_TOKEN'] %>;
 
