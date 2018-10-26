@@ -39,7 +39,7 @@ http {
 
   server {
     listen <%= port %> reuseport;
-    server_name <%= ENV['HOSTNAME'] || (ENV.fetch('HEROKU_APP_NAME', 'unknown') + '.herokuapp.com') %>
+    server_name <%= ENV['APP_HOSTNAME'] %>
 
     charset <%= encoding %>;
     port_in_redirect off;
