@@ -17,17 +17,13 @@ http {
 
   server_tokens off;
 
-<% if logging['access'] %>
-  access_log logs/access.log;
-<% else %>
-  access_log off;
-<% end %>
-
 <% if debug %>
+  access_log logs/access.log;
   error_log stderr debug;
   rewrite_log on;
 <% else %>
-  error_log stderr <%= logging['error'] %>;
+  access_log off;
+  error_log stderr error;
 <% end %>
 
   include mime.types;
@@ -37,21 +33,28 @@ http {
   #Must read the body in 5 seconds.
   client_body_timeout 5;
 
+  # Remove www
+  server {
+    listen <%= port %>;
+    server_name www.<%= ENV['APP_HOSTNAME'] %>;
+    return 301 $scheme://<%= ENV['APP_HOSTNAME'] %>$request_uri;
+  }
+
   server {
     listen <%= port %> reuseport;
-    server_name <%= ENV['APP_HOSTNAME'] %>
-
+    server_name <%= ENV['APP_HOSTNAME'] %>;
     charset <%= encoding %>;
     port_in_redirect off;
     keepalive_timeout 5;
     root <%= root %>;
 
+    # We need this in a few places so calculate it once and store it
     set $is_prerender_ua 0;
     if ($http_user_agent ~ "Prerender") {
       set $is_prerender_ua 1;
     }
 
-    <% if https_only %>
+    # Force HTTPS
     set $redirect_to_https Y;
     if ($is_prerender_ua != 1) {
       set $redirect_to_https "${redirect_to_https}Y";
@@ -62,7 +65,6 @@ http {
     if ($redirect_to_https = YYY) {
       return 301 https://$host$request_uri;
     }
-    <% end %>
 
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
