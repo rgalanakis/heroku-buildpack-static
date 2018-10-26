@@ -36,13 +36,13 @@ http {
   # Remove www
   server {
     listen <%= port %>;
-    server_name www.<%= ENV['APP_HOSTNAME'] %>;
-    return 301 $scheme://<%= ENV['APP_HOSTNAME'] %>$request_uri;
+    server_name <%= ENV['STATIC_WWW_SERVERS'] %>;
+    return 301 $scheme://<%= ENV['STATIC_NAKED_HOSTNAME'] %>$request_uri;
   }
 
   server {
     listen <%= port %> reuseport;
-    server_name <%= ENV['APP_HOSTNAME'] %>;
+    server_name <%= ENV['STATIC_NAKED_HOSTNAMES'] %>;
     charset <%= encoding %>;
     port_in_redirect off;
     keepalive_timeout 5;
@@ -56,7 +56,7 @@ http {
 
     # Force HTTPS
     set $redirect_to_https Y;
-    if ($is_prerender_ua != 1) {
+    if ($is_prerender_ua = 0) {
       set $redirect_to_https "${redirect_to_https}Y";
     }
     if ($http_x_forwarded_proto != "https") {
