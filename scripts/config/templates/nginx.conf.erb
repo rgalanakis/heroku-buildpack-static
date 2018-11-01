@@ -17,12 +17,11 @@ http {
 
   server_tokens off;
 
-<% if debug %>
   access_log logs/access.log;
+<% if debug %>
   error_log stderr debug;
   rewrite_log on;
 <% else %>
-  access_log off;
   error_log stderr error;
 <% end %>
 
