@@ -38,8 +38,8 @@ http {
     listen <%= port %>;
     server_name <%= ENV['STATIC_WWW_SERVERS'] %>;
 
-    location /service-worker.js {
-      try_files $uri;
+    location = /service-worker.js {
+      try_files /service-worker.js $uri =404;
     }
 
     location / {
