@@ -37,14 +37,7 @@ http {
   server {
     listen <%= port %>;
     server_name <%= ENV['STATIC_WWW_SERVERS'] %>;
-
-    location /service-worker.js {
-      try_files $uri;
-    }
-
-    location / {
-      return 301 $scheme://<%= ENV['STATIC_WWW_NEWHOST'] %>$request_uri;
-    }
+    return 301 $scheme://<%= ENV['STATIC_WWW_NEWHOST'] %>$request_uri;
   }
 <% end %>
 
