@@ -44,7 +44,7 @@ http {
     }
 
     location / {
-      return 301 $scheme://<%= ENV['STATIC_WWW_NEWHOST'] %>$request_uri;
+      return 302 $scheme://<%= ENV['STATIC_WWW_NEWHOST'] %>$request_uri;
     }
   }
 <% end %>
